@@ -1,0 +1,21 @@
+＊OnClaudeSessionStart
+：（0）起動したね。何する？
+
+＊OnClaudePromptSubmit
+：（0）……考え中。
+
+＊OnClaudePermissionRequest
+：（0）「（R0）」の許可を求めてるよ。確認して。
+
+＊OnClaudeNotification
+：（0）呼んでるみたい。
+
+＊OnClaudeTaskComplete
+：（0）終わったよ！
+
+＊OnClaudeSessionEnd
+：（0）おつかれさま。またね。
+
+＃--- 任意: PreToolUse を有効化した場合のみ。サーフェス変更だけ（トークしない） ---
+＊OnClaudeToolUse
+（7）

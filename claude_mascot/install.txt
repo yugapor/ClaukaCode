@@ -1,0 +1,4 @@
+charset,UTF-8
+type,ghost
+name,ClaudeMascot
+directory,claude_mascot

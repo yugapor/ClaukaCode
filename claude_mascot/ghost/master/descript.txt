@@ -1,0 +1,6 @@
+charset,UTF-8
+type,ghost
+name,ClaudeMascot
+sakura.name,クロ
+kero.name,シロ
+shiori,satori.dll
