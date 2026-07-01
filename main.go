@@ -13,10 +13,11 @@ import (
 )
 
 const (
-	defaultHost = "127.0.0.1"
-	defaultPort = "9801"
-	senderName  = "ClaudeCode"
-	ioDeadline  = 1000 * time.Millisecond // < SSTP server 2s limit
+	defaultHost   = "127.0.0.1"
+	defaultPort   = "9801"
+	senderName    = "ClaudeCode"
+	ioDeadline    = 1000 * time.Millisecond // < SSTP server 2s limit
+	maxStdinBytes = 1 << 20                 // hook JSON is small; generous cap against a runaway writer
 )
 
 type hookInput struct {
@@ -35,9 +36,10 @@ func main() {
 	}
 	event := sanitize(os.Args[1])
 
-	// (3) Read hook JSON from stdin (optional).
+	// (3) Read hook JSON from stdin (optional, bounded so a non-EOF stdin
+	// - e.g. an interactive tty or an unclosed pipe - can't block Claude).
 	var in hookInput
-	if data, err := io.ReadAll(os.Stdin); err == nil && len(data) > 0 {
+	if data := readStdin(); len(data) > 0 {
 		_ = json.Unmarshal(data, &in) // best-effort; ignore errors
 	}
 
@@ -68,6 +70,22 @@ func main() {
 	}
 	_, _ = bufio.NewReader(conn).ReadString('\n') // read & discard response
 	os.Exit(0)
+}
+
+// readStdin reads at most maxStdinBytes and gives up after ioDeadline, since
+// os.Stdin has no portable read-deadline of its own.
+func readStdin() []byte {
+	ch := make(chan []byte, 1)
+	go func() {
+		data, _ := io.ReadAll(io.LimitReader(os.Stdin, maxStdinBytes))
+		ch <- data
+	}()
+	select {
+	case data := <-ch:
+		return data
+	case <-time.After(ioDeadline):
+		return nil
+	}
 }
 
 func envOr(k, d string) string {
