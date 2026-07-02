@@ -345,6 +345,30 @@ func TestNotifyFrame_HeaderInjectionIsSanitized(t *testing.T) {
 	}
 }
 
+func TestNotifyFrame_EventArgInjectionIsSanitized(t *testing.T) {
+	ms := startMockServer(t, true)
+	defer ms.close()
+	host, port := ms.hostPort()
+
+	malicious := "OnClaudeTaskComplete\r\nEvent: OnClaudeHacked\r\n\r\nGET /evil HTTP/1.1"
+	res := run(t, []string{malicious}, "", map[string]string{
+		"CC_UKAGAKA_HOST": host,
+		"CC_UKAGAKA_PORT": port,
+	})
+	if res.exitCode != 0 || res.stderr != "" {
+		t.Fatalf("got exit=%d stderr=%q, want exit=0 no stderr", res.exitCode, res.stderr)
+	}
+
+	frame := waitForFrame(t, ms)
+	want := "NOTIFY SSTP/1.1\r\n" +
+		"Sender: " + senderName + "\r\n" +
+		"Event: OnClaudeTaskCompleteEvent: OnClaudeHackedGET /evil HTTP/1.1\r\n" +
+		"Charset: UTF-8\r\n\r\n"
+	if frame != want {
+		t.Errorf("frame = %q, want %q (argv event name must be sanitized before framing)", frame, want)
+	}
+}
+
 func TestConnectionRefused_ExitsCleanly(t *testing.T) {
 	port := freePort(t)
 	res := run(t, []string{"OnClaudeTaskComplete"}, "", map[string]string{
