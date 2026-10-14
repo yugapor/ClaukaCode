@@ -25,6 +25,10 @@ type hookInput struct {
 }
 
 func main() {
+	if len(os.Args) == 3 && os.Args[1] == "install" {
+		installMain(os.Args[2])
+	}
+
 	// (1) Backgrounding is the hook config's job ("async": true); we just stay fast.
 	// (2) SSTP Event name from argv[1]; exit silently if absent.
 	if len(os.Args) < 2 || os.Args[1] == "" {
