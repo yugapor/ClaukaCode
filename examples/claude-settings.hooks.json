@@ -1,22 +1,22 @@
 {
   "hooks": {
     "SessionStart": [
-      { "hooks": [ { "type": "command", "command": "cc-ukagaka OnClaudeSessionStart" } ] }
+      { "hooks": [ { "type": "command", "async": true, "command": "cc-ukagaka OnClaudeSessionStart" } ] }
     ],
     "UserPromptSubmit": [
-      { "hooks": [ { "type": "command", "command": "cc-ukagaka OnClaudePromptSubmit" } ] }
+      { "hooks": [ { "type": "command", "async": true, "command": "cc-ukagaka OnClaudePromptSubmit" } ] }
     ],
     "PermissionRequest": [
-      { "hooks": [ { "type": "command", "command": "cc-ukagaka OnClaudePermissionRequest" } ] }
+      { "hooks": [ { "type": "command", "async": true, "command": "cc-ukagaka OnClaudePermissionRequest" } ] }
     ],
     "Notification": [
-      { "hooks": [ { "type": "command", "command": "cc-ukagaka OnClaudeNotification" } ] }
+      { "hooks": [ { "type": "command", "async": true, "command": "cc-ukagaka OnClaudeNotification" } ] }
     ],
     "Stop": [
-      { "hooks": [ { "type": "command", "command": "cc-ukagaka OnClaudeTaskComplete" } ] }
+      { "hooks": [ { "type": "command", "async": true, "command": "cc-ukagaka OnClaudeTaskComplete" } ] }
     ],
     "SessionEnd": [
-      { "hooks": [ { "type": "command", "command": "cc-ukagaka OnClaudeSessionEnd" } ] }
+      { "hooks": [ { "type": "command", "async": true, "command": "cc-ukagaka OnClaudeSessionEnd" } ] }
     ]
   }
 }

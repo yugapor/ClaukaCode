@@ -3,9 +3,7 @@
 package main
 
 import (
-	"bufio"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net"
 	"os"
@@ -27,9 +25,7 @@ type hookInput struct {
 }
 
 func main() {
-	// (1) Never block Claude: background immediately.
-	fmt.Println(`{"async":true}`)
-
+	// (1) Backgrounding is the hook config's job ("async": true); we just stay fast.
 	// (2) SSTP Event name from argv[1]; exit silently if absent.
 	if len(os.Args) < 2 || os.Args[1] == "" {
 		os.Exit(0)
@@ -63,13 +59,9 @@ func main() {
 	if err != nil {
 		os.Exit(0)
 	}
-	defer conn.Close()
 	_ = conn.SetDeadline(time.Now().Add(ioDeadline))
-	if _, err := conn.Write([]byte(msg)); err != nil {
-		os.Exit(0)
-	}
-	_, _ = bufio.NewReader(conn).ReadString('\n') // read & discard response
-	os.Exit(0)
+	_, _ = conn.Write([]byte(msg)) // don't wait for the response
+	_ = conn.Close()
 }
 
 // readStdin reads at most maxStdinBytes and gives up after ioDeadline, since

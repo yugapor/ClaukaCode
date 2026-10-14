@@ -1,7 +1,7 @@
 {
   "hooks": {
     "PreToolUse": [
-      { "hooks": [ { "type": "command", "command": "cc-ukagaka OnClaudeToolUse" } ] }
+      { "hooks": [ { "type": "command", "async": true, "command": "cc-ukagaka OnClaudeToolUse" } ] }
     ]
   }
 }
