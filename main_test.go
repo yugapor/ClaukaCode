@@ -209,8 +209,8 @@ func TestNoEventArg_ExitsImmediately(t *testing.T) {
 	if res.exitCode != 0 {
 		t.Errorf("exit code = %d, want 0", res.exitCode)
 	}
-	if res.stdout != "{\"async\":true}\n" {
-		t.Errorf("stdout = %q, want async line only", res.stdout)
+	if res.stdout != "" {
+		t.Errorf("stdout = %q, want empty", res.stdout)
 	}
 	if res.stderr != "" {
 		t.Errorf("stderr = %q, want empty", res.stderr)
@@ -219,8 +219,8 @@ func TestNoEventArg_ExitsImmediately(t *testing.T) {
 
 func TestEmptyEventArg_ExitsImmediately(t *testing.T) {
 	res := run(t, []string{""}, "", nil)
-	if res.exitCode != 0 || res.stdout != "{\"async\":true}\n" || res.stderr != "" {
-		t.Errorf("got exit=%d stdout=%q stderr=%q, want exit=0 async-only stdout, no stderr",
+	if res.exitCode != 0 || res.stdout != "" || res.stderr != "" {
+		t.Errorf("got exit=%d stdout=%q stderr=%q, want exit=0 empty stdout, no stderr",
 			res.exitCode, res.stdout, res.stderr)
 	}
 }
@@ -378,8 +378,8 @@ func TestConnectionRefused_ExitsCleanly(t *testing.T) {
 	if res.exitCode != 0 {
 		t.Errorf("exit code = %d, want 0", res.exitCode)
 	}
-	if res.stdout != "{\"async\":true}\n" {
-		t.Errorf("stdout = %q, want async line only", res.stdout)
+	if res.stdout != "" {
+		t.Errorf("stdout = %q, want empty", res.stdout)
 	}
 	if res.stderr != "" {
 		t.Errorf("stderr = %q, want empty", res.stderr)
@@ -389,7 +389,7 @@ func TestConnectionRefused_ExitsCleanly(t *testing.T) {
 	}
 }
 
-func TestUnresponsiveServer_RespectsIODeadline(t *testing.T) {
+func TestUnresponsiveServer_DoesNotWaitForResponse(t *testing.T) {
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		t.Fatalf("listen: %v", err)
@@ -407,11 +407,8 @@ func TestUnresponsiveServer_RespectsIODeadline(t *testing.T) {
 	if res.exitCode != 0 || res.stderr != "" {
 		t.Errorf("got exit=%d stderr=%q, want exit=0 no stderr", res.exitCode, res.stderr)
 	}
-	if res.elapsed < ioDeadline {
-		t.Errorf("returned in %v, faster than the %v I/O deadline; deadline may not be applied", res.elapsed, ioDeadline)
-	}
-	if res.elapsed > ioDeadline+2*time.Second {
-		t.Errorf("took %v to hit a %v deadline, want a bounded overshoot", res.elapsed, ioDeadline)
+	if res.elapsed >= ioDeadline {
+		t.Errorf("took %v against an unresponsive server, want < %v (must not wait for a response)", res.elapsed, ioDeadline)
 	}
 }
 

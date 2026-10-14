@@ -21,6 +21,18 @@ GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -o cc-ukagaka.exe .
 2. `examples/claude-settings.hooks.json` の内容を `~/.claude/settings.json`（または `<project>/.claude/settings.json`）の `hooks` にマージする。既存の `hooks` があれば上書きせずマージすること。
 3. SSP を起動し、`claude_mascot/` を `.nar` 化したゴースト（`satori.dll` と shell を追加した状態）を導入・起動する。
 
+## 他のエージェント（Codex / Pi / OpenCode）
+
+バイナリを置いた状態で、次を実行するとアダプタが配置されます（バイナリの絶対パスを埋め込むため PATH 設定は不要。Windows / macOS 共通）。
+
+```sh
+cc-ukagaka install codex     # $CODEX_HOME または ~/.codex/hooks.json にマージ（要 config.toml の [features] hooks = true）
+cc-ukagaka install pi        # ~/.pi/agent/extensions/cc-ukagaka.ts
+cc-ukagaka install opencode  # ~/.config/opencode/plugins/cc-ukagaka.js
+```
+
+対象エージェントを一度起動して設定ディレクトリが存在する状態で実行してください。再実行は上書き（codex は既存の cc-ukagaka エントリを置換、他のフックは保持）。アンインストールは該当ファイル／エントリを手動で削除してください。
+
 ## 環境変数
 
 | 変数 | 既定 | 用途 |
